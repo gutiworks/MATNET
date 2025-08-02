@@ -17,13 +17,18 @@ public class Main {
 
         System.out.println("\n");
         
-        System.out.println("Select mode: (1) Server  (2) Client");
+        System.out.print("Select mode: (1) Server  (2) Client: ");
         int choice = scanner.nextInt();
 
-        if (choice == 1) {
-            //ChatServer.start();
-        } else {
-            //ChatClient.start();
+        try {
+            if (choice == 1) {
+                Server.start();
+            } else {
+                Client.start();
+            }    
+        } catch (Exception e) {
+            System.out.print("Something went wrong ... " + e.getMessage());
         }
+
     }
 }

@@ -2,36 +2,40 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Client {
-    
-    public static void start() throws IOException{
-        String host = "localhost";
-        int port = 5001;
+public class Server {
 
-        Socket socket = new Socket(host, port);
-        System.out.println("Connected to the server");
-        
+    public static void start() throws IOException{
+       
+        int port = 5001;
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Server started");
+        System.out.println("Waiting for a connection ...");
+
+        //Listen for a connection
+        Socket socket = serverSocket.accept();
+        System.out.println("Connection established");
+    
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
-        //Listen messages
+        // Thread to listen for messages from client
         new Thread(() -> {
             try {
                 String msg;
                 while ((msg = in.readLine()) != null) {
-                    System.out.println("\nServer: " + msg);
-                    System.out.println("You: ");
-                }       
-            } catch (Exception e) {
-                System.out.println("Connection closed by the server");
+                    System.out.println("\nClient: " + msg);
+                    System.out.print("You: ");
+                }
+            } catch (IOException e) {
+                System.out.println("Connection closed by client.");
             }
-        } 
-        ).start();
+        }).start();
 
-        //Sends messages
+        // Main thread sends messages
         String line;
         System.out.print("You: ");
         while ((line = console.readLine()) != null) {
@@ -40,5 +44,6 @@ public class Client {
         }
 
         socket.close();
+        serverSocket.close();
     }
 }
